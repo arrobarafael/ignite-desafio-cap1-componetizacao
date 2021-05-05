@@ -1,23 +1,35 @@
+import { useEffect, useState } from 'react';
+import { api } from '../services/api';
 import { MovieCard } from './MovieCard';
 
 interface ContentProps {
-  movies: Array<{
-    imdbID: string;
-    Title: string;
-    Poster: string;
-    Ratings: Array<{
-      Source: string;
-      Value: string;
-    }>;
-    Runtime: string;
-  }>;
   selectedGenre: {
     title: string;
   };
+  selectedGenreId: number;
 }
 
-export function Content({ movies, selectedGenre }: ContentProps) {
-  // Complete aqui
+interface MovieProps {
+  imdbID: string;
+  Title: string;
+  Poster: string;
+  Ratings: Array<{
+    Source: string;
+    Value: string;
+  }>;
+  Runtime: string;
+}
+
+export function Content({ selectedGenre, selectedGenreId }: ContentProps) {
+  const [movies, setMovies] = useState<MovieProps[]>([]);
+
+  useEffect(() => {
+    api
+      .get<MovieProps[]>(`movies/?Genre_id=${selectedGenreId}`)
+      .then((response) => {
+        setMovies(response.data);
+      });
+  }, [selectedGenreId]);
 
   return (
     <div className="container">
